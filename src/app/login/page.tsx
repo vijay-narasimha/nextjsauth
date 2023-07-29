@@ -2,16 +2,26 @@
 import Link from 'next/link';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Axios } from 'axios';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 export default function LoginPage() {
+  const router=useRouter()
   const [user, setUser] = React.useState({
     email: '',
     password: '',
     
   });
   const onLogin= async () => {
-    console.log(user);
+    try {
+      const response=await axios.post('/api/users/login',user)
+      console.log('login success',response.data)
+      toast.success('login success')
+      router.push('/profile')
+    } catch (error:any) {
+      console.log("login failed",error.response.data.error)
+      
+    }
   };
   return (
     <>

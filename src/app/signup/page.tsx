@@ -2,18 +2,36 @@
 import Link from 'next/link';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Axios } from 'axios';
+import axios from 'axios';
 
 
 export default function SignupPage() {
+  const router=useRouter()
   const [user, setUser] = React.useState({
     email: '',
     password: '',
     username: '',
   });
+  const [buttonDisabled,setButtonDisabled]=React.useState(false)
+  
   const onSignup = async () => {
-    console.log(user);
+    try {
+      const response=await axios.post('/api/users/signup',user)
+      console.log('signup success',response)
+      router.push('/login')
+    } catch (error:any) {
+      console.log("signup failed",error.response.data.error)
+    }
   };
+
+React.useEffect(()=>{
+  if(user.email.length>0 && user.username.length>0 && user.password.length>0){
+    setButtonDisabled(false)
+  }else{
+    setButtonDisabled(true)
+  }
+},[user])
+
   return (
     <>
       <div className='flex flex-col items-center justify-center min-h-screen py-2'>
@@ -47,7 +65,7 @@ export default function SignupPage() {
           placeholder='password'
         />
         <button onClick={onSignup} className='p-2 border rounded-lg mb-4 '>
-          Signup
+          {buttonDisabled ? 'NoSignup' :'Signup'}
         </button>
         <Link href='/login'>Login</Link>
       </div>
